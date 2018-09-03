@@ -1,9 +1,6 @@
 package com.allybros.Unit;
 
 import com.allybros.Game;
-import com.allybros.UIComponent.DataPanel;
-import com.allybros.UIComponent.MapPanel;
-
 import javax.swing.*;
 import java.awt.*;
 import java.util.ArrayList;
@@ -17,6 +14,7 @@ public class Player {
     private static int counter;
     private static ArrayList<Player> players = new ArrayList<>();
     public int paid;
+    public boolean isFirst;
 
     public Player(String name, int colorNumber){
         counter++;
@@ -24,49 +22,8 @@ public class Player {
         this.id = counter;
         this.points = 10;
         this.colorNumber = colorNumber;
+        this.isFirst = true;
         players.add(this);
-    }
-
-    public int newTurnPoints(){
-        int newPoints = rollDice() + taxincome;
-        this.points += (newPoints);
-        paid = newPoints-taxincome;
-        return newPoints;
-    }
-
-
-    public void increaseTaxIncome(int value){
-        this.taxincome += value;
-    }
-
-    public void reduceTaxIncome(int value){
-        this.taxincome -= value;
-    }
-
-
-
-    public int getTaxincome() {
-        return taxincome;
-    }
-
-    public int getPoints(){
-        return this.points;
-    }
-
-    public boolean spendPoints(int value){
-        if (this.points>=value) {
-            this.points-=value;
-            return true;
-        }else return false;
-    }
-
-    public void increasePoints(int value){
-        this.points+=value;
-    }
-
-
-    public int rollDice() {
-        return (int) (Math.random() * 12);
     }
 
     public Color getColor(){
@@ -97,6 +54,52 @@ public class Player {
         return players.get(id-1);
     }
 
+    public int getTaxincome() {
+        return taxincome;
+    }
+
+    public int getPoints(){
+        return this.points;
+    }
+
+
+
+
+
+    public int newTurnPoints(){
+        int newPoints = rollDice() + taxincome;
+        this.points += (newPoints);
+        paid = newPoints-taxincome;
+        return newPoints;
+    }
+
+
+    public void increaseTaxIncome(int value){
+        this.taxincome += value;
+    }
+
+    public void reduceTaxIncome(int value){
+        this.taxincome -= value;
+    }
+
+    public boolean spendPoints(int value){
+        if (this.points>=value) {
+            this.points-=value;
+            return true;
+        }else return false;
+    }
+
+    public void increasePoints(int value){
+        this.points+=value;
+    }
+
+
+    public int rollDice() {
+        return (int) (Math.random() * 12);
+    }
+
+
+
     public static int numberOfPlayers(){
         return counter;
     }
@@ -104,6 +107,7 @@ public class Player {
     public boolean isCurrentPlayer(){
         return this.getId() == Game.getCurrentPlayer().getId();
     }
+
 
     public int gameOver(){
         JOptionPane.showMessageDialog(Game.mainWindow,"'"+this.name+"' has been defeated!","Bad news!",JOptionPane.WARNING_MESSAGE);

@@ -35,12 +35,13 @@ public class Game {
             }
         });
 
-        mainWindow.setSize(x*65,y*75);
+        mainWindow.setSize(x*70,y*75);
         mainWindow.setLayout(new BorderLayout());
         mainWindow.add(mapPanel,BorderLayout.CENTER);
         mainWindow.add(dataPanel,BorderLayout.NORTH);
         mainWindow.add(completeTurn, BorderLayout.SOUTH);
         mainWindow.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        mainWindow.setLocationRelativeTo(null);
         mainWindow.show();
     }
 
@@ -53,6 +54,7 @@ public class Game {
         if (turn%Player.numberOfPlayers() == 1) {
            payment();
         }
+        mainWindow.setTitle(currentPlayer.name+"'s Turn - Ülke Kapmaca");
     }
 
     public static void payment(){

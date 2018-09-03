@@ -7,8 +7,10 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
+import java.util.Objects;
 
 import static com.allybros.UIComponent.MapPanel.getMapX;
+import static com.allybros.UIComponent.MapPanel.getMapY;
 
 public class Country extends JButton{
     private int col;
@@ -16,7 +18,7 @@ public class Country extends JButton{
     private int value;
     private Player owner;
     private static ArrayList<Country> countries = new ArrayList<>();
-
+    private static Country abstractCountry = new Country(1000,1000);
     public Country(int col, int row) {
         this.col = col;
         this.row = row;
@@ -28,6 +30,7 @@ public class Country extends JButton{
         this.setForeground(Color.lightGray);
         Country current = this;
         countries.add(this);
+        countries.remove(abstractCountry);
         this.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
@@ -53,24 +56,28 @@ public class Country extends JButton{
 
     public void take(Player owner) {
         int tax;
-        if (owner.spendPoints(this.value)){
-            tax = (int) (0.1*this.value);
-            if (this.owner != null) {
-                this.owner.reduceTaxIncome(tax);
-                if (this.owner.getTaxincome() == 0) {
-                    owner.increasePoints(this.owner.getPoints());
-                    this.owner.gameOver();
+        if (isBounds(owner,this)) {
+            if (owner.spendPoints(this.value)){
+                tax = (int) (0.1*this.value); //Calculate old tax rate
+                if (this.owner != null) { //Reduce old owner's tax rate if exists
+                    this.owner.reduceTaxIncome(tax);
+                    if (this.owner.getTaxincome() == 0) { //Game over condition
+                        owner.increasePoints(this.owner.getPoints());
+                        this.owner.gameOver();
+                    }
                 }
-            }
 
-            this.owner = owner;
-            this.value *=2;
-            tax = (int) (0.1*this.value);
-            owner.increaseTaxIncome(tax);
-            update();
-            Game.dataPanel.update();
+                this.owner = owner;
+                this.value *= 2;
+                tax = (int) (0.1*this.value);
+                owner.increaseTaxIncome(tax);
+                update();
+                Game.dataPanel.update();
+            }else {
+                JOptionPane.showMessageDialog(Game.mainWindow,"Insufficent points","Error",JOptionPane.ERROR_MESSAGE);
+            }
         }else {
-            JOptionPane.showMessageDialog(Game.mainWindow,"Insufficent points","Error",JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(Game.mainWindow,"There are no boundries to this region","Error",JOptionPane.ERROR_MESSAGE);
         }
 
     }
@@ -101,19 +108,33 @@ public class Country extends JButton{
     }
 
     public static Country getCountryByColRow(int col,int row){
-        if (col<0||row<0) return null;
+        if (col<0||row<0||col>=getMapX()||row>=getMapY()){
+            return abstractCountry;
+        }
         int index;
         index = col + ((getMapX()) * row);
+        System.out.println("Getting index: "+index);
         return countries.get(index);
     }
 
 
     public static boolean isBounds(Player player, Country country){
-        boolean isbounds = false;
+        if (player.isFirst) {
+            player.isFirst=false;
+            return true;
+        }
         int col = country.col;
         int row = country.row;
-        if (getCountryByColRow(col-1,row-1).owner==player) isbounds = true;
-        return isbounds;
+        if (Objects.requireNonNull(getCountryByColRow(col - 1, row - 1)).owner==player) return true;
+        if (Objects.requireNonNull(getCountryByColRow(col, row - 1)).owner==player) return true;
+        if (Objects.requireNonNull(getCountryByColRow(col + 1, row - 1)).owner==player) return  true;
+        if (Objects.requireNonNull(getCountryByColRow(col - 1, row)).owner==player) return true;
+        if (Objects.requireNonNull(getCountryByColRow(col + 1, row)).owner==player) return true;
+        if (Objects.requireNonNull(getCountryByColRow(col - 1, row + 1)).owner==player) return true;
+        if (Objects.requireNonNull(getCountryByColRow(col, row + 1)).owner==player) return true;
+        if (Objects.requireNonNull(getCountryByColRow(col + 1, row + 1)).owner==player) return true;
+        System.out.println("Not bounds to: "+country.col+", "+country.row);
+        return false;
     }
 
 }
