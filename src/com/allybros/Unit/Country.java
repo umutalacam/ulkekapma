@@ -119,8 +119,7 @@ public class Country extends JButton{
 
 
     public static boolean isBounds(Player player, Country country){
-        if (player.isFirst) {
-            player.isFirst=false;
+        if (!player.haveCountry) {
             return true;
         }
         int col = country.col;
