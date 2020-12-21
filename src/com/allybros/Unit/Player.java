@@ -14,7 +14,7 @@ public class Player {
     private static int counter;
     private static ArrayList<Player> players = new ArrayList<>();
     public int paid;
-    public boolean isFirst;
+    public boolean haveCountry;
 
     public Player(String name, int colorNumber){
         counter++;
@@ -22,7 +22,7 @@ public class Player {
         this.id = counter;
         this.points = 10;
         this.colorNumber = colorNumber;
-        this.isFirst = true;
+        this.haveCountry = false;
         players.add(this);
     }
 
@@ -85,6 +85,9 @@ public class Player {
     public boolean spendPoints(int value){
         if (this.points>=value) {
             this.points-=value;
+            if(!this.haveCountry){
+                this.haveCountry = true;
+            }
             return true;
         }else return false;
     }
